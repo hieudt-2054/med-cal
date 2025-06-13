@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máy Tính Thuốc Thông Minh</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .calculator-section {
+            padding: 20px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 25px;
+            padding: 4px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .calculator-form {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 20px 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #43cea2, #185a9d);
+            color: white;
+            padding: 20px 15px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .result-card.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .result-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .table-section {
+            padding: 20px 15px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: white;
+            min-width: 600px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 6px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        th:first-child {
+            background: linear-gradient(135deg, #43cea2, #185a9d);
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 10px 6px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .dose-label {
+            background: linear-gradient(135deg, #43cea2, #185a9d);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+
+        tr:nth-child(even) td:not(.dose-label) {
+            background: #f8f9ff;
+        }
+
+        td:not(.dose-label):hover {
+            background: #bbdefb !important;
+            font-weight: 700;
+            color: #1565c0;
+            cursor: pointer;
+            transform: scale(1.05);
+        }
+
+        .highlight {
+            background: #fff3e0 !important;
+            border: 2px solid #ff9800 !important;
+        }
+
+        .quick-tips {
+            background: #f0f8ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .quick-tips h4 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .quick-tips ul {
+            font-size: 12px;
+            color: #666;
+            margin-left: 15px;
+        }
+
+        .quick-tips li {
+            margin-bottom: 4px;
+        }
+
+        /* Tablet styles */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+            }
+
+            .header {
+                padding: 30px 25px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .calculator-section {
+                padding: 30px 25px;
+            }
+
+            .mode-btn {
+                font-size: 14px;
+                padding: 15px 12px;
+            }
+
+            .calculator-form {
+                padding: 25px 20px;
+            }
+
+            .table-section {
+                padding: 30px 25px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 12px 8px;
+            }
+        }
+
+        /* Desktop styles */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1200px;
+            }
+
+            .main-content {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 0;
+            }
+
+            .calculator-section {
+                border-right: 1px solid #eee;
+                border-bottom: none;
+            }
+
+            table {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💊 Máy Tính Thuốc Thông Minh</h1>
+            <p>Tính toán chính xác - Tư vấn hiệu quả</p>
+        </div>
+
+        <div class="main-content">
+            <div class="calculator-section">
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="switchMode('calculate')">
+                        📊 Tính Tổng Viên
+                    </button>
+                    <button class="mode-btn" onclick="switchMode('reverse')">
+                        🔄 Tính Liều/Ngày
+                    </button>
+                </div>
+
+                <!-- Mode 1: Calculate Total Pills -->
+                <div id="calculateMode" class="calculator-form">
+                    <div class="form-group">
+                        <label class="form-label">🗓️ Số ngày uống thuốc:</label>
+                        <select class="form-select" id="daysSelect">
+                            <option value="">Chọn số ngày...</option>
+                            <option value="1">1 ngày</option>
+                            <option value="2">2 ngày</option>
+                            <option value="3">3 ngày</option>
+                            <option value="4">4 ngày</option>
+                            <option value="5">5 ngày</option>
+                            <option value="6">6 ngày</option>
+                            <option value="7">7 ngày (1 tuần)</option>
+                            <option value="8">8 ngày</option>
+                            <option value="9">9 ngày</option>
+                            <option value="10">10 ngày</option>
+                            <option value="14">14 ngày (2 tuần)</option>
+                            <option value="21">21 ngày (3 tuần)</option>
+                            <option value="30">30 ngày (1 tháng)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">💊 Số viên mỗi ngày:</label>
+                        <select class="form-select" id="doseSelect">
+                            <option value="">Chọn liều lượng...</option>
+                            <option value="0.5">0.5 viên/ngày</option>
+                            <option value="1">1 viên/ngày</option>
+                            <option value="1.5">1.5 viên/ngày</option>
+                            <option value="2">2 viên/ngày</option>
+                            <option value="2.5">2.5 viên/ngày</option>
+                            <option value="3">3 viên/ngày</option>
+                            <option value="4">4 viên/ngày</option>
+                            <option value="5">5 viên/ngày</option>
+                            <option value="6">6 viên/ngày</option>
+                            <option value="8">8 viên/ngày</option>
+                        </select>
+                    </div>
+                    
+                    <button class="calculate-btn" onclick="calculateTotal()">
+                        ⚡ Tính Tổng Số Viên
+                    </button>
+                </div>
+
+                <!-- Mode 2: Reverse Calculate -->
+                <div id="reverseMode" class="calculator-form" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">💊 Tổng số viên có:</label>
+                        <input type="number" class="form-input" id="totalPills" placeholder="Nhập tổng số viên..." min="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">🗓️ Số ngày muốn uống:</label>
+                        <select class="form-select" id="daysReverseSelect">
+                            <option value="">Chọn số ngày...</option>
+                            <option value="1">1 ngày</option>
+                            <option value="2">2 ngày</option>
+                            <option value="3">3 ngày</option>
+                            <option value="4">4 ngày</option>
+                            <option value="5">5 ngày</option>
+                            <option value="6">6 ngày</option>
+                            <option value="7">7 ngày (1 tuần)</option>
+                            <option value="8">8 ngày</option>
+                            <option value="9">9 ngày</option>
+                            <option value="10">10 ngày</option>
+                            <option value="14">14 ngày (2 tuần)</option>
+                            <option value="21">21 ngày (3 tuần)</option>
+                            <option value="30">30 ngày (1 tháng)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="calculate-btn" onclick="calculateDose()">
+                        🔄 Tính Liều Mỗi Ngày
+                    </button>
+                </div>
+
+                <div id="resultCard" class="result-card">
+                    <div class="result-value" id="resultValue">0</div>
+                    <div class="result-label" id="resultLabel">viên</div>
+                </div>
+
+                <div class="quick-tips">
+                    <h4>💡 Mẹo sử dụng:</h4>
+                    <ul>
+                        <li>Chế độ 1: Tính tổng viên cần mua</li>
+                        <li>Chế độ 2: Tính liều khi biết số viên có sẵn</li>
+                        <li>Click vào bảng để xem chi tiết</li>
+                        <li>Kết quả hiển thị ngay lập tức</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <h3 class="section-title">📋 Bảng Tra Cứu Nhanh</h3>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Viên/Ngày</th>
+                                <th>1d</th>
+                                <th>2d</th>
+                                <th>3d</th>
+                                <th>4d</th>
+                                <th>5d</th>
+                                <th>7d</th>
+                                <th>10d</th>
+                                <th>14d</th>
+                                <th>21d</th>
+                                <th>30d</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tạo bảng tra cứu
+        function createTable() {
+            const tbody = document.getElementById('tableBody');
+            const doses = [0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 8];
+            const days = [1, 2, 3, 4, 5, 7, 10, 14, 21, 30];
+            
+            doses.forEach(dose => {
+                const row = document.createElement('tr');
+                
+                // Cột liều lượng
+                const doseCell = document.createElement('td');
+                doseCell.className = 'dose-label';
+                doseCell.textContent = dose === Math.floor(dose) ? `${dose}v` : `${dose}v`;
+                row.appendChild(doseCell);
+                
+                // Các cột kết quả
+                days.forEach(day => {
+                    const cell = document.createElement('td');
+                    const total = dose * day;
+                    cell.textContent = total === Math.floor(total) ? total : total.toFixed(1);
+                    
+                    // Màu sắc theo mức độ
+                    if (total <= 5) {
+                        cell.style.color = '#4caf50';
+                    } else if (total <= 15) {
+                        cell.style.color = '#ff9800';
+                    } else {
+                        cell.style.color = '#f44336';
+                    }
+                    
+                    cell.addEventListener('click', function() {
+                        showPillInfo(dose, day, total);
+                        highlightCell(this);
+                    });
+                    
+                    row.appendChild(cell);
+                });
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Chuyển đổi chế độ
+        function switchMode(mode) {
+            const calculateMode = document.getElementById('calculateMode');
+            const reverseMode = document.getElementById('reverseMode');
+            const buttons = document.querySelectorAll('.mode-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (mode === 'calculate') {
+                calculateMode.style.display = 'block';
+                reverseMode.style.display = 'none';
+                buttons[0].classList.add('active');
+            } else {
+                calculateMode.style.display = 'none';
+                reverseMode.style.display = 'block';
+                buttons[1].classList.add('active');
+            }
+            
+            hideResult();
+        }
+
+        // Tính tổng số viên
+        function calculateTotal() {
+            const days = parseFloat(document.getElementById('daysSelect').value);
+            const dose = parseFloat(document.getElementById('doseSelect').value);
+            
+            if (!days || !dose) {
+                alert('⚠️ Vui lòng chọn đầy đủ thông tin!');
+                return;
+            }
+            
+            const total = days * dose;
+            showResult(total, 'viên tổng cộng', `${dose} viên/ngày × ${days} ngày`);
+        }
+
+        // Tính liều mỗi ngày
+        function calculateDose() {
+            const total = parseFloat(document.getElementById('totalPills').value);
+            const days = parseFloat(document.getElementById('daysReverseSelect').value);
+            
+            if (!total || !days) {
+                alert('⚠️ Vui lòng nhập đầy đủ thông tin!');
+                return;
+            }
+            
+            const dose = total / days;
+            const roundedDose = Math.round(dose * 10) / 10;
+            showResult(roundedDose, 'viên/ngày', `${total} viên ÷ ${days} ngày`);
+        }
+
+        // Hiển thị kết quả
+        function showResult(value, unit, calculation) {
+            const resultCard = document.getElementById('resultCard');
+            const resultValue = document.getElementById('resultValue');
+            const resultLabel = document.getElementById('resultLabel');
+            
+            resultValue.textContent = value === Math.floor(value) ? value : value.toFixed(1);
+            resultLabel.innerHTML = `${unit}<br><small style="font-size: 12px; opacity: 0.8;">${calculation}</small>`;
+            
+            resultCard.classList.remove('show');
+            setTimeout(() => {
+                resultCard.classList.add('show');
+            }, 100);
+        }
+
+        // Ẩn kết quả
+        function hideResult() {
+            document.getElementById('resultCard').classList.remove('show');
+        }
+
+        // Highlight cell
+        function highlightCell(cell) {
+            document.querySelectorAll('.highlight').forEach(el => {
+                el.classList.remove('highlight');
+            });
+            cell.classList.add('highlight');
+        }
+
+        // Hiển thị thông tin thuốc
+        function showPillInfo(dose, days, total) {
+            const message = `💊 THÔNG TIN ĐơN THUỐC\n\n` +
+                          `📅 Thời gian: ${days} ngày\n` +
+                          `💊 Liều lượng: ${dose} viên/ngày\n` +
+                          `📦 Tổng cộng: ${total} viên\n\n` +
+                          `📋 Hướng dẫn: Uống ${dose} viên mỗi ngày trong ${days} ngày`;
+            
+            if (window.innerWidth <= 768) {
+                // Mobile: hiển thị trong result card
+                showResult(total, 'viên tổng cộng', `${dose} viên/ngày × ${days} ngày`);
+            } else {
+                // Desktop: hiển thị alert
+                alert(message);
+            }
+        }
+
+        // Khởi tạo
+        document.addEventListener('DOMContentLoaded', function() {
+            createTable();
+            
+            // Auto calculate khi thay đổi select
+            document.getElementById('daysSelect').addEventListener('change', calculateTotal);
+            document.getElementById('doseSelect').addEventListener('change', calculateTotal);
+            document.getElementById('daysReverseSelect').addEventListener('change', calculateDose);
+            document.getElementById('totalPills').addEventListener('input', calculateDose);
+        });
+    </script>
+</body>
+</html>
